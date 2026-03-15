@@ -3,10 +3,6 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import axios from "axios";
-import { useEffect } from 'react';
-
-
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -19,11 +15,6 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
-  useEffect(() => {
-  axios.get("http://localhost:5000/api/auth")
-    .then(res => console.log(res.data))
-    .catch(err => console.log(err));
-}, []);
   return (
     <AuthProvider>
       <BrowserRouter>
