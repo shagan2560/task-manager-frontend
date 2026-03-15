@@ -3,127 +3,109 @@ import axios from "axios";
 
 const AuthContext = createContext();
 
-const API_URL = import.meta.env.VITE_API_URL + "/api/auth";
+// Fallback added so app still works even if .env is missing
+const BASE_URL =
+  import.meta.env.VITE_API_URL || "https://task-manager-backend-qdhh.onrender.com";
+
+const API_URL = `${BASE_URL}/api/auth`;
 
 export const AuthProvider = ({ children }) => {
-
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
-  // Set axios header and load profile
   useEffect(() => {
+    const initAuth = async () => {
+      if (token) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        await fetchProfile();
+      } else {
+        delete axios.defaults.headers.common["Authorization"];
+        setLoading(false);
+      }
+    };
 
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      fetchProfile();
-    } 
-    else {
-      setLoading(false);
-    }
-
+    initAuth();
   }, [token]);
 
-
-  // Get logged in user
   const fetchProfile = async () => {
     try {
-
       const res = await axios.get(`${API_URL}/profile`);
       setUser(res.data);
-
     } catch (error) {
-
       logout();
-
     } finally {
-
       setLoading(false);
-
     }
   };
 
-
-  // LOGIN
   const login = async (email, password) => {
-
     try {
-
       const res = await axios.post(`${API_URL}/login`, {
         email,
-        password
+        password,
       });
 
-      const { token: newToken, ...userData } = res.data;
+      const data = res.data;
 
-      localStorage.setItem("token", newToken);
+      localStorage.setItem("token", data.token);
+      setToken(data.token);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
 
-      setToken(newToken);
-      setUser(userData);
+      // If backend already returns user data with token
+      if (data.user) {
+        setUser(data.user);
+      } else {
+        await fetchProfile();
+      }
 
-      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
-
-      return res.data;
-
+      return data;
     } catch (error) {
-
       throw new Error(
         error.response?.data?.message || "Login failed"
       );
-
     }
-
   };
 
-
-  // REGISTER
   const register = async (name, email, password) => {
-
     try {
-
       const res = await axios.post(`${API_URL}/register`, {
         name,
         email,
-        password
+        password,
       });
 
-      const { token: newToken, ...userData } = res.data;
+      const data = res.data;
 
-      localStorage.setItem("token", newToken);
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
+        axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+      }
 
-      setToken(newToken);
-      setUser(userData);
+      if (data.user) {
+        setUser(data.user);
+      } else {
+        await fetchProfile();
+      }
 
-      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
-
-      return res.data;
-
+      return data;
     } catch (error) {
-
       throw new Error(
-        error.response?.data?.message || "Register failed"
+        error.response?.data?.message || "Registration failed"
       );
-
     }
-
   };
 
-
-  // LOGOUT
   const logout = () => {
-
     localStorage.removeItem("token");
-
     setToken(null);
     setUser(null);
-
     delete axios.defaults.headers.common["Authorization"];
-
+    setLoading(false);
   };
 
-
   return (
-
     <AuthContext.Provider
       value={{
         user,
@@ -131,16 +113,12 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         register,
-        logout
+        logout,
       }}
     >
-
       {children}
-
     </AuthContext.Provider>
-
   );
-
 };
 
 export const useAuth = () => useContext(AuthContext);

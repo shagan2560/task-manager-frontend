@@ -16,9 +16,9 @@ const Login = () => {
     try {
       await login(email, password);
       navigate('/dashboard');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
-    }
+} catch (err) {
+  setError(err.message || 'Login failed');
+}
   };
 
   return (
