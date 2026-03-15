@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_URL = import.meta.env.API_URL + "/api/auth";
+const API_URL = import.meta.env.VITE_API_URL + "/api/auth";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -33,19 +33,25 @@ export const AuthProvider = ({ children }) => {
 
 const login = async (email, password) => {
 
-  const res = await fetch(
-    "https://task-manager-backend-qdhh.onrender.com/api/auth/login",
-    {
-      method: "POST",   // VERY IMPORTANT
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        password
-      })
-    }
-  );
+  const res = await axios.post(`${API_URL}/login`, {
+    email,
+    password
+  });
+
+  const { token: newToken, ...userData } = res.data;
+
+  // save token
+  localStorage.setItem("token", newToken);
+
+  // update state
+  setToken(newToken);
+  setUser(userData);
+
+  // set axios header
+  axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+
+  return res.data;
+};
 
   const data = await res.json();
 
