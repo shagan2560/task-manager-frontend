@@ -31,14 +31,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (email, password) => {
-    const res = await axios.post(`${API_URL}/login`, { email, password });
-    const { token: newToken, ...userData } = res.data;
-    localStorage.setItem('token', newToken);
-    setToken(newToken);
-    setUser(userData);
-    return res.data;
-  };
+const login = async (email, password) => {
+
+  const res = await fetch(
+    "https://task-manager-backend-qdhh.onrender.com/api/auth/login",
+    {
+      method: "POST",   // VERY IMPORTANT
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email,
+        password
+      })
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message || "Login failed");
+  }
+
+  localStorage.setItem("token", data.token);
+};
 
   const register = async (name, email, password) => {
     const res = await axios.post(`${API_URL}/register`, {
