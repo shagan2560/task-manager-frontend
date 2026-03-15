@@ -35,7 +35,7 @@ const Board = () => {
 
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/api/auth/profile", {
+      const res = await fetch("https://task-manager-backend-qdhh.onrender.com/api/auth/profile", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -77,7 +77,7 @@ useEffect(() => {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `http://localhost:5000/api/tasks/${selectedBoard._id}`,
+        `https://task-manager-backend-qdhh.onrender.com/api/tasks/${selectedBoard._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -109,7 +109,7 @@ const fetchBoards = async () => {
 
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/boards", {
+    const res = await fetch("https://task-manager-backend-qdhh.onrender.com/api/boards", {
       headers: {
         "Authorization": `Bearer ${token}`
       }
@@ -134,7 +134,7 @@ const fetchBoards = async () => {
 
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/boards", {
+    const res = await fetch("https://task-manager-backend-qdhh.onrender.com/api/boards", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -164,7 +164,7 @@ const deleteBoard = async (id, e) => {
 
     const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:5000/api/boards/${id}`, {
+    await fetch(`https://task-manager-backend-qdhh.onrender.com/api/boards/${id}`, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${token}`
@@ -189,7 +189,7 @@ const handleCreateTask = async () => {
 
     const token = localStorage.getItem("token");
 
-    const res = await fetch("http://localhost:5000/api/tasks", {
+    const res = await fetch("https://task-manager-backend-qdhh.onrender.com/api/tasks", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -248,7 +248,7 @@ const handleDrop = async (targetColumn) => {
 
     const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:5000/api/tasks/${draggedTask._id}`, {
+    await fetch(`https://task-manager-backend-qdhh.onrender.com/api/tasks/${draggedTask._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -289,7 +289,7 @@ const deleteTask = async (column, id) => {
 
     const token = localStorage.getItem("token");
 
-    await fetch(`http://localhost:5000/api/tasks/${id}`, {
+    await fetch(`https://task-manager-backend-qdhh.onrender.com/api/tasks/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`
