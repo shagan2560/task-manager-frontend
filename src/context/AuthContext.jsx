@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }) => {
   };
 
 const login = async (email, password) => {
-
   const res = await axios.post(`${API_URL}/login`, {
     email,
     password
@@ -40,14 +39,10 @@ const login = async (email, password) => {
 
   const { token: newToken, ...userData } = res.data;
 
-  // save token
   localStorage.setItem("token", newToken);
-
-  // update state
   setToken(newToken);
   setUser(userData);
 
-  // set axios header
   axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
 
   return res.data;
